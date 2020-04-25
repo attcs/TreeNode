@@ -16,8 +16,8 @@ A general software database hierarchy is often handled by a heterogenous contain
 
 # Notes
 * Header only implementation (treenode.h and required standard headers are needed to be included).
-* Recommended if the data purposely stored in a tree structure and element removal is needed otherwise a contiguous container could be a better choice.
-* The solution based on multiple double linked lists along with all its pros and cons. 
+* Recommended if the data purposely stored in a tree structure and element removal is needed, otherwise a contiguous container could be a better choice.
+* The solution is based on multiple double linked lists, along with all its pros and cons. 
 * Homogenous container (heterogeneous elements based in a common ancestor can be stored by smart ptrs: TreeNode<unique_ptr<DbEntityBase>> root)
 * Navigator element are available: next(), prev(), parent(), child_first(), child_last()
 * C++17 execution policies are supported.
@@ -28,7 +28,6 @@ A general software database hierarchy is often handled by a heterogenous contain
 
 # Basic example
     ...
-    
     TreeNode<int> root(0);
     auto c1 = root.add_child(1);
     auto c11 = c1->add_child(11);
