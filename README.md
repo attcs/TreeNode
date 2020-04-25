@@ -3,7 +3,7 @@ TreeNode is a self-contained linked list which represents a treegraph.<br>
 Implemented iterators
 * Segment iterator (IteratorSegment (bidirectional): iterates over only the child element)
 * Depth-first-search iterator (IteratorDfs, IteratorDfsConst (bidirectional): iterates over the tree)
-* Breadth-first-search iterator (IteratorBfs, IteratorBfsConst (bidirectional): iterates over tree)
+* Breadth-first-search iterator (IteratorBfs, IteratorBfsConst (bidirectional): iterates over the tree)
 
 # Requirements
 * Language standard: C++14 or above
