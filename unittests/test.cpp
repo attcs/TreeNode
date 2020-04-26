@@ -398,6 +398,158 @@ namespace TreeNodeTests
     EXPECT_EQ(nullptr, c131->next_bfs());
   }
 
+  TEST(TreeNode, child_begin_in_depth__empty__0__root)
+  {
+    TreeNode<int> root(0);
+
+    auto node = root.child_begin_in_depth(0);
+    EXPECT_EQ(&root, node);
+  }
+
+  TEST(TreeNode, child_begin_in_depth__2level__0__root)
+  {
+    TreeNode<int> root(0);
+    auto c1 = root.add_child(1);
+    auto c2 = root.add_child(2);
+    auto c11 = c1->add_child(11);
+
+    auto node = root.child_begin_in_depth(0);
+    EXPECT_EQ(&root, node);
+  }
+
+  TEST(TreeNode, child_begin_in_depth__2level__1__c1)
+  {
+    TreeNode<int> root(0);
+    auto c1 = root.add_child(1);
+    auto c2 = root.add_child(2);
+    auto c11 = c1->add_child(11);
+
+    auto node = root.child_begin_in_depth(1);
+    EXPECT_EQ(c1, node);
+  }
+
+  TEST(TreeNode, child_begin_in_depth__2level__2__c11)
+  {
+    TreeNode<int> root(0);
+    auto c1 = root.add_child(1);
+    auto c2 = root.add_child(2);
+    auto c11 = c1->add_child(11);
+
+    auto node = root.child_begin_in_depth(2);
+    EXPECT_EQ(c11, node);
+  }
+
+  TEST(TreeNode, child_begin_in_depth__2level__2__c21)
+  {
+    TreeNode<int> root(0);
+    auto c1 = root.add_child(1);
+    auto c2 = root.add_child(2);
+    auto c21 = c2->add_child(21);
+
+    auto node = root.child_begin_in_depth(2);
+    EXPECT_EQ(c21, node);
+  }
+
+  TEST(TreeNode, child_begin_in_depth__3level__3__c211)
+  {
+    TreeNode<int> root(0);
+    auto c1 = root.add_child(1);
+    auto c2 = root.add_child(2);
+    auto c21 = c2->add_child(21);
+    auto c211 = c21->add_child(211);
+
+    auto node = root.child_begin_in_depth(3);
+    EXPECT_EQ(c211, node);
+  }
+
+  TEST(TreeNode, child_begin_in_depth__3level__4__null)
+  {
+    TreeNode<int> root(0);
+    auto c1 = root.add_child(1);
+    auto c2 = root.add_child(2);
+    auto c21 = c2->add_child(21);
+    auto c211 = c21->add_child(211);
+
+    auto node = root.child_begin_in_depth(4);
+    EXPECT_EQ(nullptr, node);
+  }
+
+  TEST(TreeNode, child_end_in_depth__empty__0__null)
+  {
+    TreeNode<int> root(0);
+
+    auto node = root.child_end_in_depth(0);
+    EXPECT_EQ(nullptr, node);
+  }
+
+  TEST(TreeNode, child_end_in_depth__2level__0__c1)
+  {
+    TreeNode<int> root(0);
+    auto c1 = root.add_child(1);
+    auto c2 = root.add_child(2);
+    auto c11 = c1->add_child(11);
+
+    auto node = root.child_end_in_depth(0);
+    EXPECT_EQ(c1, node);
+  }
+
+  TEST(TreeNode, child_end_in_depth__2level__1__c11)
+  {
+    TreeNode<int> root(0);
+    auto c1 = root.add_child(1);
+    auto c2 = root.add_child(2);
+    auto c11 = c1->add_child(11);
+
+    auto node = root.child_end_in_depth(1);
+    EXPECT_EQ(c11, node);
+  }
+
+  TEST(TreeNode, child_end_in_depth__2level11__2__null)
+  {
+    TreeNode<int> root(0);
+    auto c1 = root.add_child(1);
+    auto c2 = root.add_child(2);
+    auto c11 = c1->add_child(11);
+
+    auto node = root.child_end_in_depth(2);
+    EXPECT_EQ(nullptr, node);
+  }
+
+  TEST(TreeNode, child_end_in_depth__2level21__2__null)
+  {
+    TreeNode<int> root(0);
+    auto c1 = root.add_child(1);
+    auto c2 = root.add_child(2);
+    auto c21 = c2->add_child(21);
+
+    auto node = root.child_end_in_depth(2);
+    EXPECT_EQ(nullptr, node);
+  }
+
+  TEST(TreeNode, child_end_in_depth__3level__2__c211)
+  {
+    TreeNode<int> root(0);
+    auto c1 = root.add_child(1);
+    auto c2 = root.add_child(2);
+    auto c21 = c2->add_child(21);
+    auto c211 = c21->add_child(211);
+
+    auto node = root.child_end_in_depth(2);
+    EXPECT_EQ(c211, node);
+  }
+
+  TEST(TreeNode, child_end_in_depth__3level__4__null)
+  {
+    TreeNode<int> root(0);
+    auto c1 = root.add_child(1);
+    auto c2 = root.add_child(2);
+    auto c21 = c2->add_child(21);
+    auto c211 = c21->add_child(211);
+
+    auto node = root.child_end_in_depth(4);
+    EXPECT_EQ(nullptr, node);
+  }
+
   TEST(TreeNode, clear_root_DoesNothing)
   {
     TreeNode<int> root(0);
@@ -1016,6 +1168,30 @@ namespace IteratorBreadthFirstSearchTests
     copy(root.begin_bfs(), root.end_bfs(), back_inserter(vals));
 
     auto const expected = vector<int>{ 0, 1, 2, 3, 11, 21, 22, 31, 111, 311 };
+    EXPECT_EQ(expected, vals);
+  }
+
+
+  TEST(IteratorBfs, order_inrange_level23_copy_value11212231111311)
+  {
+    TreeNode<int> root;
+    root.add_child(1)
+      ->add_child(11)
+      ->add_child(111);
+    auto node2 = root.add_child(2);
+    node2->add_child(21);
+
+    root.add_child(3)
+      ->add_child(31)
+      ->add_child(311)
+      ->add_child(3111);
+
+    node2->add_child(22);
+
+    vector<int> vals;
+    copy(root.begin_bfs(2), root.end_bfs(3), back_inserter(vals));
+
+    auto const expected = vector<int>{ 11, 21, 22, 31, 111, 311 };
     EXPECT_EQ(expected, vals);
   }
 

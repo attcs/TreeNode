@@ -240,25 +240,54 @@ public:
   //!TODO Separate the subtree, BFS will be update on both tree
   // std::unique_ptr<TreeNode<T>> deattach_child(TreeNode<T> const& child)  { return {}; }
 
-private:
-  TreeNode<T> * _depth_first_of(size_t depth)
+public:
+  TreeNode<T> const* child_begin_in_depth(size_t depth) const
   {
-    return this; //!TODO
+    size_t depth_current = 0;
+    auto node = this;
+
+    while (depth_current < depth)
+    {
+      while (node->child_first() && depth_current < depth)
+      {
+        node = node->child_first();
+        ++depth_current;
+      }
+
+      if (depth_current < depth)
+      {
+        if (node->next())
+          node = node->next();
+        else
+        {
+          node = node->_next_bfs;
+          if (!node)
+            return nullptr;
+
+          depth_current = node->get_depth();
+        }
+      }
+    }
+    return node;
   }
   
-  TreeNode<T> const* _depth_first_of(size_t depth) const
+  TreeNode<T>* child_begin_in_depth(size_t depth)
   {
-    return this; //!TODO
-  }
-  
-  TreeNode<T> * _depth_last_of(size_t depth)
-  {
-    return nullptr; //!TODO
+    return const_cast<TreeNode<T>*>(static_cast<const TreeNode<T>*>(this)->child_begin_in_depth(depth)); // Scott Meyers
   }
 
-  TreeNode<T> const* _depth_last_of(size_t depth) const
+
+  TreeNode<T> const* child_end_in_depth(size_t depth) const
   {
-    return nullptr; //!TODO
+    if (depth == -1)
+      return nullptr;
+
+    return child_begin_in_depth(depth + 1); // end: element after the last of level, so the next level begin element
+  }
+
+  TreeNode<T>* child_end_in_depth(size_t depth)
+  {
+    return const_cast<TreeNode<T>*>(static_cast<const TreeNode<T>*>(this)->child_end_in_depth(depth)); // Scott Meyers
   }
 
 
@@ -300,19 +329,19 @@ public: // Iterators
 
   // Breadth first search begin iterator
   template<typename T_or_NodePtr = T>
-  IteratorBfs<T, T_or_NodePtr> begin_bfs(size_t depth = 0) { return IteratorBfs<T, T_or_NodePtr>(_depth_first_of(depth)); }
+  IteratorBfs<T, T_or_NodePtr> begin_bfs(size_t depth = 0) { return IteratorBfs<T, T_or_NodePtr>(child_begin_in_depth(depth)); }
 
   // Breadth first search end iterator
   template<typename T_or_NodePtr = T>
-  IteratorBfs<T, T_or_NodePtr> end_bfs(size_t depth = 0) { return IteratorBfs<T, T_or_NodePtr>(nullptr); }
+  IteratorBfs<T, T_or_NodePtr> end_bfs(size_t depth = -1) { return IteratorBfs<T, T_or_NodePtr>(child_end_in_depth(depth)); }
 
   // Breadth first search begin iterator
   template<typename T_or_NodePtr = T>
-  IteratorBfsConst<T, T_or_NodePtr> begin_bfs(size_t depth = 0) const noexcept { return IteratorBfsConst<T, T_or_NodePtr>(_depth_first_of(depth)); }
+  IteratorBfsConst<T, T_or_NodePtr> begin_bfs(size_t depth = 0) const noexcept { return IteratorBfsConst<T, T_or_NodePtr>(child_begin_in_depth(depth)); }
 
   // Breadth first search end iterator
   template<typename T_or_NodePtr = T>
-  IteratorBfsConst<T, T_or_NodePtr> end_bfs(size_t depth = 0) const noexcept { return IteratorBfsConst<T, T_or_NodePtr>(nullptr); }
+  IteratorBfsConst<T, T_or_NodePtr> end_bfs(size_t depth = -1) const noexcept { return IteratorBfsConst<T, T_or_NodePtr>(child_end_in_depth(depth)); }
 
 
   // Begin iterator (using Breadth first traversal)
