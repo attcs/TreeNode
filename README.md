@@ -1,7 +1,7 @@
 # TreeNode with  Breadth-first-search iterator
-TreeNode is a self-contained linked list which represents a treegraph.<br>
+TreeNode is a self-contained linked list which represents a tree data structure.<br>
 Implemented iterators
-* Segment iterator (IteratorSegment (bidirectional): iterates over only the child element)
+* Segment iterator (IteratorSegment (bidirectional): iterates over only the child elements)
 * Depth-first-search iterator (IteratorDfs, IteratorDfsConst (bidirectional): iterates over the tree)
 * Breadth-first-search iterator (IteratorBfs, IteratorBfsConst (bidirectional): iterates over the tree)
 
