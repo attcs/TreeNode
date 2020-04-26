@@ -19,7 +19,8 @@ A general software database hierarchy is often handled by a heterogenous contain
 * Recommended if the data purposely stored in a tree structure and element removal is needed, otherwise a contiguous container could be a better choice.
 * The solution is based on multiple double linked lists, along with all its pros and cons. 
 * Homogenous container (heterogeneous elements based in a common ancestor can be stored by smart ptrs: TreeNode<unique_ptr<DbEntityBase>> root)
-* Navigator element are available: next(), prev(), parent(), child_first(), child_last()
+* Navigator element are available: next(), prev(), parent(), child_first(), child_last(), next_bfs(), prev_bfs()
+* Level begin and end element can be found by child_begin_in_depth()/child_end_in_depth() function
 * C++17 execution policies are supported.
 * Bidirectional iterators could be implemented in a very compact way (12in1), using static polymorphism.
 * Elements are stored by unique_ptr-s.
@@ -49,6 +50,9 @@ A general software database hierarchy is often handled by a heterogenous contain
     vector<int> valsInOrderOfBfs;
     copy(root.begin(), root.end(), back_inserter(valsInOrderOfBfs)); // { 0, 1, 2, 3, 4, 21, 211 }
     
+    vector<int> valsInOrderOfBfsOnlyLevel1And2;
+    copy(root.begin_bfs(1), root.end_bfs(2), back_inserter(valsInOrderOfBfsOnlyLevel1And2)); // { 1, 2, 3, 4, 21 }
+       
     vector<int> valsInOrderOfDfs;
     copy(root.begin_dfs(), root.end_dfs(), back_inserter(valsInOrderOfDfs)); // { 0, 1, 2, 21, 211, 3, 4 }
        
