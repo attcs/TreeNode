@@ -7,7 +7,7 @@ Implemented bidirectional iterators
 
 ## Requirements
 * Language standard: C++14 or above
-* STD Headers: \<memory\>
+* STL Headers: \<memory\>
 
 ## Motivation
 A general software database hierarchy is often handled by a heterogenous container in a tree representation. In this case, the TreeNode solution could be very helpful:
