@@ -54,12 +54,23 @@ private:
   TreeNode* _prev_bfs = nullptr;
   TreeNode* _next_bfs = nullptr;
 
+  size_t _size = 1;
+
 public:
   TreeNode() = default;
-  TreeNode(const TreeNode<T>&) = default;
+  TreeNode(const TreeNode<T>& r) { *this = r._copy(); }
   TreeNode(TreeNode<T>&&) = default;
+  TreeNode<T>& operator=(TreeNode<T> const& r) { return TreeNode<T>(r); }
   TreeNode<T>& operator=(TreeNode<T>&&) = default;
-  TreeNode<T>& operator=(TreeNode<T> const&) = default;
+  TreeNode(std::initializer_list<T> values)
+  {
+    auto it = values.begin();
+    if (it != values.end())
+      data = *it;
+
+    for (++it; it != values.end(); ++it)
+      add_child(*it);
+  }
 
   explicit TreeNode(T const& d) : data(d) {}
   explicit TreeNode(T && d) : data(std::forward<T>(d)) {}
@@ -101,7 +112,39 @@ public:
     return d;
   }
 
+  size_t size() const noexcept { return _size; }
+  size_t size_segment() const noexcept
+  {
+    size_t n = 0;
+    for (auto p = child_first(); p; p = p->next())
+      ++n;
+
+    return n;
+  }
 private:
+
+  void change_size(int const n) noexcept
+  {
+    for (auto p = this; p; p = p->_parent)
+      p->_size += n;
+  }
+
+  void _copy_segment(TreeNode<T> * root) const noexcept
+  {
+    for (auto p = child_first(); p; p = p->next())
+    {
+      auto child = root->add_child(p->get());
+      p->_copy_segment(child);
+    }
+  }
+
+  TreeNode<T> _copy() const noexcept
+  {
+    TreeNode<T> root(get());
+    _copy_segment(&root);
+    return root;
+  }
+
   TreeNode<T>* _setup_child(std::unique_ptr<TreeNode<T>>&& node) noexcept
   {
     TreeNode<T>* child = nullptr;
@@ -169,6 +212,8 @@ private:
     _child_last = child;
     child->_parent = this;
 
+    change_size(1);
+
     return child;
   }
 
@@ -204,6 +249,8 @@ public:
 
     _child_first.reset(nullptr);
     _child_last = nullptr;
+
+    change_size(static_cast<int>(1 - _size));
   }
 
   void remove() noexcept
@@ -215,6 +262,7 @@ public:
     }
 
     clear();
+    change_size(-1);
 
     // Bfs rewire
     if (_next_bfs)
@@ -236,11 +284,7 @@ public:
     }
   }
 
- 
-  //!TODO Separate the subtree, BFS will be update on both tree
-  // std::unique_ptr<TreeNode<T>> deattach_child(TreeNode<T> const& child)  { return {}; }
-
-public:
+ public:
   TreeNode<T> const* child_begin_in_depth(size_t depth) const
   {
     size_t depth_current = 0;
@@ -562,3 +606,7 @@ struct StepManagerBfs
       _node = _node->prev_bfs();
   }
 };
+
+
+template<typename T>
+void swap(TreeNode<T>& l, TreeNode<T>& r){ TreeNode::swap(l, r); }

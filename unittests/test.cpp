@@ -197,6 +197,8 @@ namespace TreeNodeTests
     EXPECT_EQ(grandchild11, child3->next_bfs());
     EXPECT_EQ(grandchild31, grandchild11->next_bfs());
     EXPECT_EQ(nullptr, grandchild31->next_bfs());
+    EXPECT_EQ(6, root.size());
+    EXPECT_EQ(2, child3->size());
   }
 
   TEST(TreeNode, add_child_3child2grandchild3Atlast_bfsOk)
@@ -233,6 +235,8 @@ namespace TreeNodeTests
     EXPECT_EQ(grandchild12, grandchild11->next_bfs());
     EXPECT_EQ(grandchild31, grandchild12->next_bfs());
     EXPECT_EQ(nullptr, grandchild31->next_bfs());
+    EXPECT_EQ(7, root.size());
+    EXPECT_EQ(3, child1->size());
   }
 
   TEST(TreeNode, add_child_3child3grandchild3Atlast_bfsOk)
@@ -396,6 +400,9 @@ namespace TreeNodeTests
     EXPECT_EQ(c212, c211->next_bfs());
     EXPECT_EQ(c131, c212->next_bfs());
     EXPECT_EQ(nullptr, c131->next_bfs());
+    EXPECT_EQ(11, root.size());
+    EXPECT_EQ(3, c3->size());
+    EXPECT_EQ(1, c3->size_segment());
   }
 
   TEST(TreeNode, child_begin_in_depth__empty__0__root)
@@ -571,14 +578,16 @@ namespace TreeNodeTests
 
     EXPECT_EQ(nullptr, root.child_first());
     EXPECT_EQ(nullptr, root.child_last());
+    EXPECT_EQ(1, root.size());
   }
 
 
   TEST(TreeNode, clear_c21_complex)
   {
     TreeNode<int> root(0);
-    root.add_child(1)
-      ->add_child(11)
+    auto c1 = root.add_child(1);
+
+    c1->add_child(11)
       ->add_child(111)
       ->parent()
       ->add_child(112)
@@ -611,6 +620,8 @@ namespace TreeNodeTests
 
     vector<int> const expected_after = { 0, 1, 2, 3, 11, 21, 111, 112, 113, 1131, 11311 };
     EXPECT_EQ(expected_after, vals_after);
+    EXPECT_EQ(11, root.size());
+    EXPECT_EQ(7, c1->size());
   }
 
   TEST(TreeNode, remove_c21_1level)
@@ -628,6 +639,7 @@ namespace TreeNodeTests
     vector<int> expected = { 0, 1, 3 };
 
     EXPECT_EQ(expected, vals);
+    EXPECT_EQ(3, root.size());
   }
 
   TEST(TreeNode, remove_c21_complex)
@@ -643,8 +655,8 @@ namespace TreeNodeTests
       ->add_child(1131)
       ->add_child(11311);
 
-    auto c21 = root.add_child(2)
-      ->add_child(21);
+    auto c2 = root.add_child(2);
+    auto c21 = c2->add_child(21);
 
     c21->add_child(211)
       ->add_child(2111);
@@ -667,6 +679,8 @@ namespace TreeNodeTests
 
     vector<int> const expected_after = { 0, 1, 2, 3, 11, 111, 112, 113, 1131, 11311 };
     EXPECT_EQ(expected_after, vals_after);
+    EXPECT_EQ(10, root.size());
+    EXPECT_EQ(1, c2->size());
   }
 
   TEST(TreeNode, begin_segment_const_ShouldCompile)
@@ -751,6 +765,51 @@ namespace TreeNodeTests
   {
     TreeNode<int> const root;
     root.end();
+  }
+
+  TEST(TreeNode, copyctor)
+  {
+    TreeNode<int> root(0);
+    auto c11o = root.add_child(1)->add_child(11);
+    root.add_child(2);
+    root.add_child(3);
+
+    auto root_copied(root);
+    EXPECT_EQ(0, root_copied.get());
+    auto c1 = root_copied.next_bfs();
+    EXPECT_EQ(1, c1->get());
+    auto c2 = c1->next_bfs();
+    EXPECT_EQ(2, c2->get());
+    auto c3 = c2->next_bfs();
+    EXPECT_EQ(3, c3->get());
+    auto c11 = c3->next_bfs();
+    EXPECT_EQ(11, c11->get());
+    EXPECT_EQ(c11, c1->child_first());
+    EXPECT_NE(c11, c11o);
+  }
+
+  TEST(TreeNode, initializerlist)
+  {
+    TreeNode<int> root = { 0, 1, 2, 3};
+
+    EXPECT_EQ(0, root.get());
+    auto c1 = root.next_bfs();
+    EXPECT_EQ(1, c1->get());
+    auto c2 = c1->next_bfs();
+    EXPECT_EQ(2, c2->get());
+    auto c3 = c2->next_bfs();
+    EXPECT_EQ(3, c3->get());
+  }
+
+  TEST(TreeNode, foreach)
+  {
+    TreeNode<int> root = { 0, 1, 2, 3 };
+    auto c11 = root.child_first()->add_child(4);
+    c11->add_child(5);
+
+    int i = 0;
+    for (auto v : root)
+      EXPECT_EQ(i++, v);
   }
 }
 
