@@ -27,10 +27,19 @@ A general software database hierarchy is often handled by a heterogenous contain
 * Special `begin_*()` and `end_*()` can be templated with TreeNode, if hierarchy information is needed.
 * Unittest is attached. (GTEST)
 
-## Basic example
+## Basic examples
 ```C++
     ...
-    TreeNode<int> root(0);
+    // Initialization
+    
+    const TreeNode<int> list = { 0, 1, 2, 3, 4 }; // Initializer list: root: 0; childs: 1, 2, 3, 4
+    auto list_copy = list; // Copy ctor and Copy-assignment use deep-copy semantic
+    
+    TreeNode<int> root(0); // Value init using move
+
+
+    // Adding and removing elements
+    
     auto c1 = root.add_child(1);
     auto c11 = c1->add_child(11);
         
@@ -48,9 +57,16 @@ A general software database hierarchy is often handled by a heterogenous contain
     auto c3 = root.add_child(3);
     auto c4 = root.add_child(4);
 
+
+    // Traversals
+    
     std::vector<int> vIntBfs; // Values in order of BFS
     std::copy(root.begin(), root.end(), back_inserter(vIntBfs)); // { 0, 1, 2, 3, 4, 21, 211 }
     
+    std::vector<int> vIntBfsForeach;
+    for (autoc const& v : root)
+      vIntBfsForeach.push_back(v);  // { 0, 1, 2, 3, 4, 21, 211 }
+
     std::vector<int> vIntBfsL12; // Values on the 1. and 2. level in order of BFS
     std::copy(root.begin_bfs(1), root.end_bfs(2), back_inserter(vIntBfsL12)); // { 1, 2, 3, 4, 21 }
        
@@ -63,5 +79,13 @@ A general software database hierarchy is often handled by a heterogenous contain
     using TN = TreeNode<int>*;
     std::vector<TN> vPtrChild; // TreeNode pointers of root's child
     std::copy(root.begin_segment<TN>(), root.end_segment<TN>(), back_inserter(vPtrChild)); // { c1, c2, c3, c4 }
+    
+    // C++17 execution policies
+    std::vector<int> vIntBfsPar(root.size());
+    std::transform(std::execution::par, root.begin(), root.end(), vIntBfsPar.begin(), [](auto const& v)
+    { 
+        return v;
+    });
+    
 ```
     
